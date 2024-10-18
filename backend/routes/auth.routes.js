@@ -3,9 +3,13 @@ import { Router } from "express";
 import User from "../models/User.model.js";
 import pkg from "express-validator";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 const _bcrypt = bcrypt;
+const _jwt = jwt;
 const { body, validationResult } = pkg;
 const router = Router();
+const JWT_secret = "secret_key";
+
 router.post(
   "/createuser",
   [
@@ -44,7 +48,52 @@ router.post(
         email: req.body.email,
         password: secpass,
       });
+      const data = {
+        user: {
+          usernmae: user.username,
+        },
+      };
+
       res.status(200).json("User created");
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).send("Internal Server Error");
+    }
+  }
+);
+
+router.post(
+  "/login",
+  [
+    body("email", "Enter a valid email").isEmail(),
+    body("password", "Password cannot be blank").exists(),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const { email, password } = req.body;
+    try {
+      let user = await User.findOne({ email });
+      if (!user) {
+        return res
+          .status(400)
+          .json({ error: "Please try to login with correct credentials" });
+      }
+      const passwordCompare = await bcrypt.compare(password, user.password);
+      if (!passwordCompare) {
+        res
+          .status(400)
+          .json({ error: "Please try to login with correct credentials" });
+      }
+      const data = {
+        user: {
+          username: user.username,
+        },
+      };
+      const authToken = jwt.sign(data, JWT_secret);
+      res.json({ authToken });
     } catch (error) {
       console.error(error.message);
       res.status(500).send("Internal Server Error");
