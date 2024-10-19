@@ -9,7 +9,7 @@ const _jwt = jwt;
 const { body, validationResult } = pkg;
 const router = Router();
 const JWT_secret = "secret_key";
-
+// ROUTE 1: Create User using POST method "/api/auth/createuser"
 router.post(
   "/createuser",
   [
@@ -61,7 +61,7 @@ router.post(
     }
   }
 );
-
+// ROUTE 2 : Create User Login using POST method "/api/auth/login"
 router.post(
   "/login",
   [
@@ -100,5 +100,13 @@ router.post(
     }
   }
 );
-
+// ROUTE 3 : GET loggedIn User Details using : POST method "/api/auth/getuser"
+router.post("/getuser", (req, res) => {
+  try {
+    authtoken = req.body;
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Internal Server Error");
+  }
+});
 export default router;
