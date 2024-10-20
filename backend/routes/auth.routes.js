@@ -4,11 +4,13 @@ import User from "../models/User.model.js";
 import pkg from "express-validator";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import checkAuth from "../middleware/middleware.js";
 const _bcrypt = bcrypt;
 const _jwt = jwt;
 const { body, validationResult } = pkg;
 const router = Router();
 const JWT_secret = "secret_key";
+
 // ROUTE 1: Create User using POST method "/api/auth/createuser"
 router.post(
   "/createuser",
@@ -87,9 +89,11 @@ router.post(
           .status(400)
           .json({ error: "Please try to login with correct credentials" });
       }
+      const expiresIn = 3600;
       const data = {
         user: {
           username: user.username,
+          exp: Math.floor(Date.now() / 1000) + expiresIn,
         },
       };
       const authToken = jwt.sign(data, JWT_secret);
@@ -101,9 +105,15 @@ router.post(
   }
 );
 // ROUTE 3 : GET loggedIn User Details using : POST method "/api/auth/getuser"
-router.post("/getuser", (req, res) => {
+router.post("/getuser", checkAuth, async (req, res) => {
   try {
-    authtoken = req.body;
+    const username = req.userData.username;
+    const user = await User.find({ username: username }).select("-password");
+    console.log(username, user);
+    if (!user) {
+      res.status(400).json({ error: "User cannot get" });
+    }
+    res.status(200).json(user);
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Internal Server Error");
