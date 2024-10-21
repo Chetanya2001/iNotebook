@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+const _jwt = jwt;
 const JWT_secret = "secret_key";
 
 const checkAuth = (req, res, next) => {
@@ -11,15 +12,9 @@ const checkAuth = (req, res, next) => {
 
     console.log("Token received:", token);
 
-    // Verify the token (jsonwebtoken automatically handles expiration)
-    // const decoded = jwt.verify(token, JWT_secret);
-    const base64Url = token.split(".")[1]; // Get the payload part of the JWT
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const decodedData = JSON.parse(
-      Buffer.from(base64, "base64").toString("utf8")
-    );
-
-    console.log("Manually Decoded Token:", decodedData);
+    // Verify the token
+    const decodedData = _jwt.verify(token, JWT_secret);
+    console.log("Decoded Data:", decodedData);
 
     // Attach user data to request object
     req.userData = decodedData;
@@ -27,7 +22,6 @@ const checkAuth = (req, res, next) => {
     // Proceed to the next middleware or route handler
     next();
   } catch (error) {
-    // Handle token expiration or invalid token errors
     console.error("JWT verification error:", error.message);
     return res.status(401).send({ errors: error.message });
   }
