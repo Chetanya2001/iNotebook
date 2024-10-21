@@ -1,6 +1,11 @@
 import mongoose from "mongoose";
-
+import { Schema } from "mongoose";
 const NotesSchema = new Schema({
+  username: {
+    type: String,
+    ref: "User",
+    required: true,
+  },
   title: {
     type: String,
     required: true,
@@ -18,4 +23,4 @@ const NotesSchema = new Schema({
     default: Date.now,
   },
 });
-module.exports = mongoose.model("notes", NotesSchema);
+export default mongoose.model("Notes", NotesSchema);
