@@ -75,28 +75,37 @@ router.post(
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
+
     const { email, password } = req.body;
+
     try {
+      // Find user by email
       let user = await User.findOne({ email });
       if (!user) {
         return res
           .status(400)
           .json({ error: "Please try to login with correct credentials" });
       }
+
+      // Compare password
       const passwordCompare = await bcrypt.compare(password, user.password);
       if (!passwordCompare) {
-        res
+        return res
           .status(400)
           .json({ error: "Please try to login with correct credentials" });
       }
-      const expiresIn = 3600;
+
+      // Create JWT payload without exp in the user object
       const data = {
         user: {
           username: user.username,
-          exp: Math.floor(Date.now() / 1000) + expiresIn,
         },
       };
-      const authToken = jwt.sign(data, JWT_secret);
+
+      // Sign JWT with expiration of 1 hour (3600 seconds)
+      const authToken = _jwt.sign(data, JWT_secret, { expiresIn: "1h" });
+
+      // Send token in response
       res.json({ authToken });
     } catch (error) {
       console.error(error.message);
@@ -104,12 +113,15 @@ router.post(
     }
   }
 );
+
 // ROUTE 3 : GET loggedIn User Details using : POST method "/api/auth/getuser"
 router.post("/getuser", checkAuth, async (req, res) => {
   try {
-    const username = req.userData.username;
+    console.log("here");
+    console.log(req.userData);
+    const username = req.userData.user.username;
+    console.log(username);
     const user = await User.find({ username: username }).select("-password");
-    console.log(username, user);
     if (!user) {
       res.status(400).json({ error: "User cannot get" });
     }
