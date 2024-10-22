@@ -13,7 +13,7 @@ router.get("/getNotes", checkAuth, async (req, res) => {
   }
   res.status(200).json(notes);
 });
-// Route 1: Post notes using Post Method : /api/auth/getNotes
+// Route 2: Post notes using Post Method : /api/auth/getNotes
 router.post(
   "/addNotes",
   checkAuth,
@@ -44,4 +44,46 @@ router.post(
     }
   }
 );
+// Route 3 : Updating notes using PUT method : /api/auth/update
+router.put("/update/:id", checkAuth, async (req, res) => {
+  try {
+    const { title, description, tag } = req.body;
+
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    // Build the newNote object
+    const newNote = {};
+    if (title) newNote.title = title;
+    if (description) newNote.description = description;
+    if (tag) newNote.tag = tag;
+
+    // Find the note by id
+    let note = await Notes.findById(req.params.id);
+
+    if (!note) {
+      return res.status(404).json({ msg: "Note not found" });
+    }
+
+    // Ensure the user can only update their own notes
+    if (note.username !== req.userData.user.username) {
+      return res.status(401).json({ msg: "Unauthorized to update this note" });
+    }
+
+    // Update the note with new data
+    note = await Notes.findByIdAndUpdate(
+      req.params.id,
+      { $set: newNote },
+      { new: true }
+    );
+
+    res.json(note); // Send back the updated note
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Internal Server Error");
+  }
+});
 export default router;
