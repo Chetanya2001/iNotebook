@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-
+//Make const of MongoURL
 const mongoURI =
   "mongodb://chetanya:mathur%402001@127.0.0.1:27017/inotebook?authSource=admin";
 const connectToMongo = async () => {

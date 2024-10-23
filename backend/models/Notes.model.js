@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { Schema } from "mongoose";
+//Create Structure of Notes table
 const NotesSchema = new Schema({
   username: {
     type: String,
