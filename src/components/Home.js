@@ -31,11 +31,13 @@ export const Home = () => {
         </div>
         <button className="btn btn-success">Add Note</button>
         <h3>Your Notes</h3>
-        <p>
+        <h5>
+          {"Title:  "}
+
           {notes.map((note) => {
             return note.title;
           })}
-        </p>
+        </h5>
       </div>
     </>
   );
