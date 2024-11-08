@@ -22,6 +22,12 @@ const NoteState = (props) => {
       __v: 0,
     },
   ];
+  //ADD notes
+  const addNote = () => {};
+  // Delete Note
+  const deleteNote = () => {};
+  //Edit Note
+  const EditNote = () => {};
   const [notes, setnotes] = useState(notesInitial);
   return (
     <NoteContext.Provider value={{ notes, setnotes }}>

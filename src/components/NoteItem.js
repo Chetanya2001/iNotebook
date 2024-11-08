@@ -1,17 +1,34 @@
+// NoteItem.js
 import React from "react";
 
-const NoteItem = (props) => {
-  const { note } = props;
+const NoteItem = ({ note }) => {
+  // Inline style objects
+  const cardStyle = {
+    padding: "15px",
+    fontFamily: "Arial, sans-serif",
+  };
+
+  const titleStyle = {
+    fontSize: "1.2rem",
+    fontWeight: "bold",
+  };
+
+  const textStyle = {
+    fontSize: "1rem",
+    color: "#555",
+  };
+
   return (
-    <div className="col-md-3">
-      <div className="card my-3">
-        <div className="card-body">
-          <h5 className="card-title">{note.title}</h5>
-          <p className="card-text">{note.description}</p>
-          <button className="btn btn-success">Update</button>
-          <button className="btn btn-danger">Delete</button>
-        </div>
-      </div>
+    <div className="note-item" style={cardStyle}>
+      <h5 className="card-title" style={titleStyle}>
+        {note.title}
+      </h5>
+      <p className="card-text" style={textStyle}>
+        {note.description}
+      </p>
+      <button className="btn btn-success">Update</button>
+      &nbsp;
+      <button className="btn btn-danger">Delete</button>
     </div>
   );
 };
