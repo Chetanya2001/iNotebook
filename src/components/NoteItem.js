@@ -1,7 +1,11 @@
 // NoteItem.js
 import React from "react";
+import noteContext from "../context/notes/NoteContext";
+import { useContext } from "react";
 
 const NoteItem = ({ note }) => {
+  const context = useContext(noteContext);
+  const { deleteNote } = context;
   // Inline style objects
   const cardStyle = {
     padding: "15px",
@@ -28,7 +32,14 @@ const NoteItem = ({ note }) => {
       </p>
       <button className="btn btn-success">Update</button>
       &nbsp;
-      <button className="btn btn-danger">Delete</button>
+      <button
+        className="btn btn-danger"
+        onClick={() => {
+          deleteNote(note._id);
+        }}
+      >
+        Delete
+      </button>
     </div>
   );
 };
